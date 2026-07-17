@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Manifesto de Carga</title>
+
+  <link rel="stylesheet" href="estilo.css">
+</head>
+
+<body>
+  <header class="cabecalho">
+    <div>
+      <span class="identificacao">SISTEMA LOGÍSTICO</span>
+      <h1>Manifesto de Carga</h1>
+      <p>Validação e conversão de cargas para transporte.</p>
+    </div>
+
+    <div class="status-sistema">
+      <span class="indicador"></span>
+      Sistema operacional
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <section class="cartao formulario-container">
+      <div class="titulo-secao">
+        <div>
+          <span class="numero-secao">01</span>
+          <h2>Dados do manifesto</h2>
+        </div>
+
+        <p>Preencha todas as informações obrigatórias.</p>
+      </div>
+
+      <form id="formulario-manifesto">
+        <div class="grade-formulario">
+          <div class="campo">
+            <label for="containerId">ID do contêiner</label>
+            <input
+              type="number"
+              id="containerId"
+              placeholder="Ex.: 55"
+            >
+            <small class="mensagem-erro" id="erro-containerId"></small>
+          </div>
+
+          <div class="campo">
+            <label for="destination">Destino</label>
+            <input
+              type="text"
+              id="destination"
+              placeholder="Ex.: São Paulo"
+            >
+            <small class="mensagem-erro" id="erro-destination"></small>
+          </div>
+
+          <div class="campo">
+            <label for="weight">Peso da carga</label>
+            <input
+              type="number"
+              id="weight"
+              step="0.01"
+              placeholder="Ex.: 400"
+            >
+            <small class="mensagem-erro" id="erro-weight"></small>
+          </div>
+
+          <div class="campo">
+            <label for="unit">Unidade de medida</label>
+            <select id="unit">
+              <option value="">Selecione uma unidade</option>
+              <option value="kg">Quilogramas (kg)</option>
+              <option value="lb">Libras (lb)</option>
+            </select>
+            <small class="mensagem-erro" id="erro-unit"></small>
+          </div>
+        </div>
+
+        <fieldset class="campo carga-perigosa">
+          <legend>A carga é perigosa?</legend>
+
+          <label class="opcao-radio">
+            <input type="radio" name="hazmat" value="true">
+            <span>Sim</span>
+          </label>
+
+          <label class="opcao-radio">
+            <input type="radio" name="hazmat" value="false">
+            <span>Não</span>
+          </label>
+
+          <small class="mensagem-erro" id="erro-hazmat"></small>
+        </fieldset>
+
+        <div class="acoes">
+          <button type="reset" class="botao-secundario">
+            Limpar
+          </button>
+
+          <button type="submit" class="botao-principal">
+            Validar e processar
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="cartao resultado-container">
+      <div class="titulo-secao">
+        <div>
+          <span class="numero-secao">02</span>
+          <h2>Resultado</h2>
+        </div>
+      </div>
+
+      <div id="resultado" class="resultado-vazio">
+        <span class="icone-resultado">▣</span>
+        <h3>Nenhum manifesto processado</h3>
+        <p>Preencha o formulário para visualizar o resultado.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Manifesto de Carga • Sistema de validação logística</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
