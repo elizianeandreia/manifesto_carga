@@ -75,7 +75,7 @@
                             <small>Data de operação</small>
 
                             <strong>
-                                {{ now()->format('d/m/Y') }}
+                                {{ now('America/Sao_Paulo')->format('d/m/Y') }}
                             </strong>
                         </div>
                     </div>
@@ -690,6 +690,7 @@
 
                                     <td>
                                         {{ $manifesto->created_at
+                                            ->timezone('America/Sao_Paulo')
                                             ->format('d/m/Y H:i') }}
                                     </td>
                                 </tr>
