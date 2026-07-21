@@ -18,3 +18,6 @@ Route::put(
     '/manifestos/{manifesto}',
     [ManifestoController::class, 'update']
 )->name('manifestos.update');
+
+Route::delete('/manifestos/{manifesto}', [ManifestoController::class, 'destroy'])
+    ->name('manifestos.destroy');

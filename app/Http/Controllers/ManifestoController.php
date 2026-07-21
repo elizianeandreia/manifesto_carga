@@ -200,3 +200,11 @@ class ManifestoController extends Controller
         ];
     }
 }
+public function destroy(Manifesto $manifesto): RedirectResponse
+{
+    $manifesto->delete();
+
+    return redirect()
+        ->route('manifestos.index')
+        ->with('success', 'Manifesto excluído com sucesso.');
+}
