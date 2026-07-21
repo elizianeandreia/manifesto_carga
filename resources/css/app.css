@@ -234,6 +234,10 @@ a {
     color: var(--vermelho);
 }
 
+.situacao.edicao {
+    color: #1f6ca5;
+}
+
 .mensagem-sistema {
     display: flex;
     min-height: 34px;
@@ -738,6 +742,73 @@ a {
     color: #9c2e2e;
 }
 
+.acoes-registro {
+    display: flex;
+    min-width: 155px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.acoes-registro form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+}
+
+.acoes-registro .botao-editar,
+.acoes-registro .botao-excluir {
+    display: inline-flex;
+    min-width: 70px;
+    min-height: 26px;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border: 1px solid;
+    border-radius: 2px;
+    font: inherit;
+    font-size: 10px;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.acoes-registro .botao-editar {
+    background: linear-gradient(180deg, #ffffff, #d8e7f4);
+    border-color: #779bbd;
+    color: #164d7c;
+}
+
+.acoes-registro .botao-editar:hover {
+    background: #c9e0f3;
+    border-color: #5d87ad;
+    color: #0d3c65;
+}
+
+.acoes-registro .botao-excluir {
+    background: linear-gradient(180deg, #fffafa, #f1d4d4);
+    border-color: #c98a8a;
+    color: #8b1d1d;
+}
+
+.acoes-registro .botao-excluir:hover {
+    background: #b83232;
+    border-color: #922626;
+    color: #ffffff;
+}
+
+.acoes-registro .botao-editar:focus-visible,
+.acoes-registro .botao-excluir:focus-visible {
+    outline: 2px solid #1d65a6;
+    outline-offset: 2px;
+}
+
 .sem-registros {
     padding: 25px !important;
     color: var(--cinza-500) !important;
@@ -976,6 +1047,7 @@ a {
 
     .barra-ferramentas,
     .acoes-formulario,
+    .acoes-registro,
     .mensagem-sistema,
     .usuario-sistema,
     .modal,
@@ -1006,28 +1078,4 @@ a {
     .historico-erp {
         break-inside: avoid;
     }
-}
-
-.situacao.edicao {
-    color: #1f6ca5;
-}
-
-.botao-editar {
-    display: inline-flex;
-    min-height: 25px;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 3px 8px;
-    background: linear-gradient(180deg, #ffffff, #d8e7f4);
-    border: 1px solid #779bbd;
-    border-radius: 2px;
-    color: #164d7c;
-    font-size: 10px;
-    text-decoration: none;
-}
-
-.botao-editar:hover {
-    background: #c9e0f3;
-    color: #0d3c65;
 }
