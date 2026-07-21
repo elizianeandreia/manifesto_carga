@@ -18,6 +18,43 @@
     </title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        .acoes-registro {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .acoes-registro form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .botao-excluir {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 26px;
+            padding: 4px 9px;
+            color: #8b1d1d;
+            background: #fff0f0;
+            border: 1px solid #dba0a0;
+            border-radius: 2px;
+            font: inherit;
+            font-size: 12px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .botao-excluir:hover {
+            color: #ffffff;
+            background: #b83232;
+            border-color: #922626;
+        }
+    </style>
 </head>
 
 <body>
@@ -157,7 +194,6 @@
             @if ($errors->any())
                 <div class="mensagem-sistema falha">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-
                     Existem informações ausentes ou inválidas.
                     Verifique os campos destacados.
                 </div>
@@ -481,19 +517,12 @@
                                         <dt>Classificação</dt>
 
                                         <dd>
-                                            @if (
-                                                $manifestoEmEdicao
-                                                    ->hazmat
-                                            )
-                                                <span
-                                                    class="texto-perigo"
-                                                >
+                                            @if ($manifestoEmEdicao->hazmat)
+                                                <span class="texto-perigo">
                                                     Carga perigosa
                                                 </span>
                                             @else
-                                                <span
-                                                    class="texto-sucesso"
-                                                >
+                                                <span class="texto-sucesso">
                                                     Carga comum
                                                 </span>
                                             @endif
@@ -569,19 +598,12 @@
                                         <dt>Classificação</dt>
 
                                         <dd>
-                                            @if (
-                                                $manifestoProcessado
-                                                    ->hazmat
-                                            )
-                                                <span
-                                                    class="texto-perigo"
-                                                >
+                                            @if ($manifestoProcessado->hazmat)
+                                                <span class="texto-perigo">
                                                     Carga perigosa
                                                 </span>
                                             @else
-                                                <span
-                                                    class="texto-sucesso"
-                                                >
+                                                <span class="texto-sucesso">
                                                     Carga comum
                                                 </span>
                                             @endif
@@ -731,15 +753,13 @@
                                     <td>
                                         @if ($manifesto->hazmat)
                                             <span
-                                                class="status-tabela
-                                                    perigosa"
+                                                class="status-tabela perigosa"
                                             >
                                                 Perigosa
                                             </span>
                                         @else
                                             <span
-                                                class="status-tabela
-                                                    comum"
+                                                class="status-tabela comum"
                                             >
                                                 Comum
                                             </span>
@@ -775,20 +795,45 @@
                                     </td>
 
                                     <td>
-                                        <a
-                                            href="{{ route(
-                                                'manifestos.edit',
-                                                $manifesto
-                                            ) }}"
-                                            class="botao-editar"
-                                            title="Editar manifesto"
-                                        >
-                                            <i
-                                                class="bi
-                                                    bi-pencil-square"
-                                            ></i>
-                                            Editar
-                                        </a>
+                                        <div class="acoes-registro">
+                                            <a
+                                                href="{{ route(
+                                                    'manifestos.edit',
+                                                    $manifesto
+                                                ) }}"
+                                                class="botao-editar"
+                                                title="Editar manifesto"
+                                            >
+                                                <i
+                                                    class="bi bi-pencil-square"
+                                                ></i>
+                                                Editar
+                                            </a>
+
+                                            <form
+                                                action="{{ route(
+                                                    'manifestos.destroy',
+                                                    $manifesto
+                                                ) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Deseja realmente excluir o manifesto nº {{ $manifesto->container_id }}?');"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="submit"
+                                                    class="botao-excluir"
+                                                    title="Excluir manifesto"
+                                                    aria-label="Excluir manifesto {{ $manifesto->container_id }}"
+                                                >
+                                                    <i
+                                                        class="bi bi-trash3"
+                                                    ></i>
+                                                    Excluir
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -813,6 +858,7 @@
 
                     <div>
                         <span>Cargas validadas</span>
+
                         <strong>
                             {{ $indicadores['validados'] }}
                         </strong>
@@ -820,6 +866,7 @@
 
                     <div>
                         <span>Cargas perigosas</span>
+
                         <strong>
                             {{ $indicadores['perigosos'] }}
                         </strong>
@@ -902,10 +949,15 @@
                         armazenará o manifesto.
                     </p>
 
-                    <p class="mb-0">
+                    <p>
                         Para corrigir um registro, clique em Editar
                         no histórico, altere os dados e selecione
                         Salvar alterações.
+                    </p>
+
+                    <p class="mb-0">
+                        Para remover um registro, clique em Excluir
+                        e confirme a operação.
                     </p>
                 </div>
 
