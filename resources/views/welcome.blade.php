@@ -340,12 +340,12 @@
 
                                 <div>
                                     <span>Banco de dados</span>
-                                    <strong>SQLite conectado</strong>
+                                    <strong>Conectado</strong>
                                 </div>
 
                                 <div>
                                     <span>Validação</span>
-                                    <strong>Executada pelo Laravel</strong>
+                                    <strong>Concluída com sucesso</strong>
                                 </div>
                             </div>
                         </fieldset>
@@ -601,15 +601,15 @@
         <footer class="barra-status">
             <span>
                 <i class="bi bi-circle-fill"></i>
-                Sistema conectado
+                Sistema disponível
             </span>
 
             <span>
-                Banco SQLite
+                Módulo: Manifesto Eletrônico de Carga
             </span>
 
             <span>
-                Laravel {{ app()->version() }}
+                Gestão Logística - LTHS Tecnologia
             </span>
 
             <span class="direitos">
