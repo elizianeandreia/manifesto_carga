@@ -10,17 +10,18 @@
 
     <meta
         name="description"
-        content="Sistema de gerenciamento de manifestos de carga."
+        content="Módulo demonstrativo para gerenciamento de manifestos de carga."
     >
 
-    <title>Manifesto Eletrônico de Carga | LTHS Tecnologia</title>
+    <title>
+        Módulo de Manifesto de Carga | LTHS Tecnologia
+    </title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
     <div class="sistema">
-        
         <header class="barra-superior">
             <div class="marca-sistema">
                 <img
@@ -46,7 +47,6 @@
             </div>
         </header>
 
-        
         <nav class="barra-ferramentas">
             <a
                 href="{{ route('manifestos.index') }}"
@@ -62,7 +62,12 @@
                 class="ferramenta"
             >
                 <i class="bi bi-floppy"></i>
-                <span>Salvar</span>
+
+                <span>
+                    {{ $manifestoEmEdicao
+                        ? 'Atualizar'
+                        : 'Salvar' }}
+                </span>
             </button>
 
             <a href="#historico" class="ferramenta">
@@ -91,13 +96,14 @@
         </nav>
 
         <main class="area-trabalho">
-        
             <section class="cabecalho-registro">
                 <div class="numero-carga">
                     <span>Nº DA CARGA:</span>
 
                     <strong>
-                        @if ($manifestoProcessado)
+                        @if ($manifestoEmEdicao)
+                            {{ $manifestoEmEdicao->container_id }}
+                        @elseif ($manifestoProcessado)
                             {{ $manifestoProcessado->container_id }}
                         @else
                             NOVO
@@ -108,7 +114,12 @@
                 <div class="situacao-registro">
                     <span>Situação:</span>
 
-                    @if ($manifestoProcessado)
+                    @if ($manifestoEmEdicao)
+                        <strong class="situacao edicao">
+                            <i class="bi bi-pencil-square"></i>
+                            EM ALTERAÇÃO
+                        </strong>
+                    @elseif ($manifestoProcessado)
                         <strong class="situacao cadastrado">
                             <i class="bi bi-check-square-fill"></i>
                             CADASTRADO
@@ -130,7 +141,8 @@
                     <span>Data e hora:</span>
 
                     <strong>
-                        {{ now('America/Sao_Paulo')->format('d/m/Y H:i') }}
+                        {{ now('America/Sao_Paulo')
+                            ->format('d/m/Y H:i') }}
                     </strong>
                 </div>
             </section>
@@ -154,14 +166,22 @@
             <form
                 id="form-manifesto"
                 method="POST"
-                action="{{ route('manifestos.store') }}"
+                action="{{ $manifestoEmEdicao
+                    ? route(
+                        'manifestos.update',
+                        $manifestoEmEdicao
+                    )
+                    : route('manifestos.store') }}"
                 autocomplete="off"
             >
                 @csrf
 
+                @if ($manifestoEmEdicao)
+                    @method('PUT')
+                @endif
+
                 <div class="grade-operacional">
                     <div class="coluna-formulario">
-                        
                         <fieldset class="grupo-erp">
                             <legend>Informações da carga</legend>
 
@@ -178,8 +198,14 @@
                                             name="container_id"
                                             min="1"
                                             step="1"
-                                            value="{{ old('container_id') }}"
-                                            class="@error('container_id') invalido @enderror"
+                                            value="{{ old(
+                                                'container_id',
+                                                $manifestoEmEdicao
+                                                    ?->container_id
+                                            ) }}"
+                                            class="@error('container_id')
+                                                invalido
+                                            @enderror"
                                         >
 
                                         <i class="bi bi-upc-scan"></i>
@@ -203,8 +229,14 @@
                                             id="destination"
                                             name="destination"
                                             maxlength="150"
-                                            value="{{ old('destination') }}"
-                                            class="@error('destination') invalido @enderror"
+                                            value="{{ old(
+                                                'destination',
+                                                $manifestoEmEdicao
+                                                    ?->destination
+                                            ) }}"
+                                            class="@error('destination')
+                                                invalido
+                                            @enderror"
                                         >
 
                                         <i class="bi bi-geo-alt"></i>
@@ -219,7 +251,6 @@
                             </div>
                         </fieldset>
 
-                       
                         <fieldset class="grupo-erp">
                             <legend>Peso e classificação</legend>
 
@@ -236,8 +267,14 @@
                                             name="weight"
                                             min="0.01"
                                             step="0.01"
-                                            value="{{ old('weight') }}"
-                                            class="@error('weight') invalido @enderror"
+                                            value="{{ old(
+                                                'weight',
+                                                $manifestoEmEdicao
+                                                    ?->original_weight
+                                            ) }}"
+                                            class="@error('weight')
+                                                invalido
+                                            @enderror"
                                         >
 
                                         <i class="bi bi-speedometer2"></i>
@@ -258,7 +295,9 @@
                                     <select
                                         id="unit"
                                         name="unit"
-                                        class="@error('unit') invalido @enderror"
+                                        class="@error('unit')
+                                            invalido
+                                        @enderror"
                                     >
                                         <option value="">
                                             Selecione
@@ -266,14 +305,26 @@
 
                                         <option
                                             value="kg"
-                                            @selected(old('unit') === 'kg')
+                                            @selected(
+                                                old(
+                                                    'unit',
+                                                    $manifestoEmEdicao
+                                                        ?->original_unit
+                                                ) === 'kg'
+                                            )
                                         >
                                             KG - Quilogramas
                                         </option>
 
                                         <option
                                             value="lb"
-                                            @selected(old('unit') === 'lb')
+                                            @selected(
+                                                old(
+                                                    'unit',
+                                                    $manifestoEmEdicao
+                                                        ?->original_unit
+                                                ) === 'lb'
+                                            )
                                         >
                                             LB - Libras
                                         </option>
@@ -297,7 +348,19 @@
                                         type="radio"
                                         name="hazmat"
                                         value="0"
-                                        @checked(old('hazmat') === '0')
+                                        @checked(
+                                            old(
+                                                'hazmat',
+                                                $manifestoEmEdicao
+                                                    ? (
+                                                        $manifestoEmEdicao
+                                                            ->hazmat
+                                                            ? '1'
+                                                            : '0'
+                                                    )
+                                                    : null
+                                            ) === '0'
+                                        )
                                     >
 
                                     <span>
@@ -311,7 +374,19 @@
                                         type="radio"
                                         name="hazmat"
                                         value="1"
-                                        @checked(old('hazmat') === '1')
+                                        @checked(
+                                            old(
+                                                'hazmat',
+                                                $manifestoEmEdicao
+                                                    ? (
+                                                        $manifestoEmEdicao
+                                                            ->hazmat
+                                                            ? '1'
+                                                            : '0'
+                                                    )
+                                                    : null
+                                            ) === '1'
+                                        )
                                     >
 
                                     <span>
@@ -328,37 +403,123 @@
                             @enderror
                         </fieldset>
 
-                       
                         <fieldset class="grupo-erp">
-                            <legend>Informações do processamento</legend>
+                            <legend>Parâmetros do manifesto</legend>
 
                             <div class="informacoes-processamento">
                                 <div>
-                                    <span>Conversão utilizada</span>
-                                    <strong>1 lb = 0,45 kg</strong>
+                                    <span>Unidade padrão</span>
+                                    <strong>Quilogramas (kg)</strong>
                                 </div>
 
                                 <div>
-                                    <span>Banco de dados</span>
-                                    <strong>Conectado</strong>
+                                    <span>Conversão de peso</span>
+                                    <strong>Automática</strong>
                                 </div>
 
                                 <div>
-                                    <span>Validação</span>
-                                    <strong>Concluída com sucesso</strong>
+                                    <span>Classificação</span>
+                                    <strong>Comum ou perigosa</strong>
                                 </div>
                             </div>
                         </fieldset>
                     </div>
 
-                   
                     <aside class="painel-resultado">
                         <div class="titulo-painel">
                             <i class="bi bi-clipboard-check"></i>
                             Resultado do processamento
                         </div>
 
-                        @if ($manifestoProcessado)
+                        @if ($manifestoEmEdicao)
+                            <div class="resultado-validado">
+                                <div class="selo-validado">
+                                    <i class="bi bi-pencil-square"></i>
+                                    Registro carregado para alteração
+                                </div>
+
+                                <dl>
+                                    <div>
+                                        <dt>Contêiner atual</dt>
+
+                                        <dd>
+                                            #{{ $manifestoEmEdicao
+                                                ->container_id }}
+                                        </dd>
+                                    </div>
+
+                                    <div>
+                                        <dt>Destino atual</dt>
+
+                                        <dd>
+                                            {{ $manifestoEmEdicao
+                                                ->destination }}
+                                        </dd>
+                                    </div>
+
+                                    <div>
+                                        <dt>Peso atual</dt>
+
+                                        <dd>
+                                            {{ number_format(
+                                                (float)
+                                                $manifestoEmEdicao
+                                                    ->original_weight,
+                                                2,
+                                                ',',
+                                                '.'
+                                            ) }}
+
+                                            {{ strtoupper(
+                                                $manifestoEmEdicao
+                                                    ->original_unit
+                                            ) }}
+                                        </dd>
+                                    </div>
+
+                                    <div>
+                                        <dt>Classificação</dt>
+
+                                        <dd>
+                                            @if (
+                                                $manifestoEmEdicao
+                                                    ->hazmat
+                                            )
+                                                <span
+                                                    class="texto-perigo"
+                                                >
+                                                    Carga perigosa
+                                                </span>
+                                            @else
+                                                <span
+                                                    class="texto-sucesso"
+                                                >
+                                                    Carga comum
+                                                </span>
+                                            @endif
+                                        </dd>
+                                    </div>
+                                </dl>
+
+                                <div class="peso-processado">
+                                    <span>
+                                        PESO NORMALIZADO ATUAL
+                                    </span>
+
+                                    <strong>
+                                        {{ number_format(
+                                            (float)
+                                            $manifestoEmEdicao
+                                                ->weight_kg,
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) }}
+                                        kg
+                                    </strong>
+                                </div>
+                            </div>
+                        @elseif ($manifestoProcessado)
                             <div class="resultado-validado">
                                 <div class="selo-validado">
                                     <i class="bi bi-check-circle-fill"></i>
@@ -368,30 +529,38 @@
                                 <dl>
                                     <div>
                                         <dt>Contêiner</dt>
+
                                         <dd>
-                                            #{{ $manifestoProcessado->container_id }}
+                                            #{{ $manifestoProcessado
+                                                ->container_id }}
                                         </dd>
                                     </div>
 
                                     <div>
                                         <dt>Destino</dt>
+
                                         <dd>
-                                            {{ $manifestoProcessado->destination }}
+                                            {{ $manifestoProcessado
+                                                ->destination }}
                                         </dd>
                                     </div>
 
                                     <div>
                                         <dt>Peso informado</dt>
+
                                         <dd>
                                             {{ number_format(
-                                                (float) $manifestoProcessado->original_weight,
+                                                (float)
+                                                $manifestoProcessado
+                                                    ->original_weight,
                                                 2,
                                                 ',',
                                                 '.'
                                             ) }}
 
                                             {{ strtoupper(
-                                                $manifestoProcessado->original_unit
+                                                $manifestoProcessado
+                                                    ->original_unit
                                             ) }}
                                         </dd>
                                     </div>
@@ -400,12 +569,19 @@
                                         <dt>Classificação</dt>
 
                                         <dd>
-                                            @if ($manifestoProcessado->hazmat)
-                                                <span class="texto-perigo">
+                                            @if (
+                                                $manifestoProcessado
+                                                    ->hazmat
+                                            )
+                                                <span
+                                                    class="texto-perigo"
+                                                >
                                                     Carga perigosa
                                                 </span>
                                             @else
-                                                <span class="texto-sucesso">
+                                                <span
+                                                    class="texto-sucesso"
+                                                >
                                                     Carga comum
                                                 </span>
                                             @endif
@@ -418,7 +594,9 @@
 
                                     <strong>
                                         {{ number_format(
-                                            (float) $manifestoProcessado->weight_kg,
+                                            (float)
+                                            $manifestoProcessado
+                                                ->weight_kg,
                                             2,
                                             ',',
                                             '.'
@@ -434,7 +612,8 @@
                                 <strong>Manifesto inválido</strong>
 
                                 <span>
-                                    Corrija os campos indicados para continuar.
+                                    Corrija os campos indicados para
+                                    continuar.
                                 </span>
 
                                 <ul>
@@ -447,7 +626,9 @@
                             <div class="resultado-aguardando">
                                 <i class="bi bi-hourglass-split"></i>
 
-                                <strong>Aguardando processamento</strong>
+                                <strong>
+                                    Aguardando processamento
+                                </strong>
 
                                 <span>
                                     Preencha os dados e clique em Salvar.
@@ -458,9 +639,15 @@
                 </div>
 
                 <div class="acoes-formulario">
-                    <button type="submit" class="botao-erp salvar">
+                    <button
+                        type="submit"
+                        class="botao-erp salvar"
+                    >
                         <i class="bi bi-check-lg"></i>
-                        Salvar e processar
+
+                        {{ $manifestoEmEdicao
+                            ? 'Salvar alterações'
+                            : 'Salvar e processar' }}
                     </button>
 
                     <a
@@ -468,12 +655,14 @@
                         class="botao-erp cancelar"
                     >
                         <i class="bi bi-x-lg"></i>
-                        Cancelar
+
+                        {{ $manifestoEmEdicao
+                            ? 'Cancelar edição'
+                            : 'Cancelar' }}
                     </a>
                 </div>
             </form>
 
-        
             <section id="historico" class="historico-erp">
                 <div class="titulo-painel">
                     <i class="bi bi-table"></i>
@@ -494,6 +683,8 @@
                                 <th>Peso normalizado</th>
                                 <th>Classificação</th>
                                 <th>Cadastro</th>
+                                <th>Última alteração</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
 
@@ -512,7 +703,8 @@
 
                                     <td>
                                         {{ number_format(
-                                            (float) $manifesto->original_weight,
+                                            (float)
+                                            $manifesto->original_weight,
                                             2,
                                             ',',
                                             '.'
@@ -526,7 +718,8 @@
                                     <td>
                                         <strong>
                                             {{ number_format(
-                                                (float) $manifesto->weight_kg,
+                                                (float)
+                                                $manifesto->weight_kg,
                                                 2,
                                                 ',',
                                                 '.'
@@ -537,11 +730,17 @@
 
                                     <td>
                                         @if ($manifesto->hazmat)
-                                            <span class="status-tabela perigosa">
+                                            <span
+                                                class="status-tabela
+                                                    perigosa"
+                                            >
                                                 Perigosa
                                             </span>
                                         @else
-                                            <span class="status-tabela comum">
+                                            <span
+                                                class="status-tabela
+                                                    comum"
+                                            >
                                                 Comum
                                             </span>
                                         @endif
@@ -549,13 +748,55 @@
 
                                     <td>
                                         {{ $manifesto->created_at
-                                            ->timezone('America/Sao_Paulo')
+                                            ->timezone(
+                                                'America/Sao_Paulo'
+                                            )
                                             ->format('d/m/Y H:i') }}
+                                    </td>
+
+                                    <td>
+                                        @if (
+                                            $manifesto->updated_at
+                                                ->gt(
+                                                    $manifesto
+                                                        ->created_at
+                                                )
+                                        )
+                                            {{ $manifesto->updated_at
+                                                ->timezone(
+                                                    'America/Sao_Paulo'
+                                                )
+                                                ->format(
+                                                    'd/m/Y H:i'
+                                                ) }}
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        <a
+                                            href="{{ route(
+                                                'manifestos.edit',
+                                                $manifesto
+                                            ) }}"
+                                            class="botao-editar"
+                                            title="Editar manifesto"
+                                        >
+                                            <i
+                                                class="bi
+                                                    bi-pencil-square"
+                                            ></i>
+                                            Editar
+                                        </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="sem-registros">
+                                    <td
+                                        colspan="8"
+                                        class="sem-registros"
+                                    >
                                         Nenhum manifesto cadastrado.
                                     </td>
                                 </tr>
@@ -572,12 +813,16 @@
 
                     <div>
                         <span>Cargas validadas</span>
-                        <strong>{{ $indicadores['validados'] }}</strong>
+                        <strong>
+                            {{ $indicadores['validados'] }}
+                        </strong>
                     </div>
 
                     <div>
                         <span>Cargas perigosas</span>
-                        <strong>{{ $indicadores['perigosos'] }}</strong>
+                        <strong>
+                            {{ $indicadores['perigosos'] }}
+                        </strong>
                     </div>
 
                     <div>
@@ -585,7 +830,8 @@
 
                         <strong>
                             {{ number_format(
-                                (float) $manifestos->sum('weight_kg'),
+                                (float)
+                                $manifestos->sum('weight_kg'),
                                 2,
                                 ',',
                                 '.'
@@ -597,7 +843,6 @@
             </section>
         </main>
 
-       
         <footer class="barra-status">
             <span>
                 <i class="bi bi-circle-fill"></i>
@@ -609,7 +854,7 @@
             </span>
 
             <span>
-                Gestão Logística - LTHS Tecnologia
+                Logística
             </span>
 
             <span class="direitos">
@@ -619,7 +864,6 @@
         </footer>
     </div>
 
-   
     <div
         class="modal fade"
         id="modalAjuda"
@@ -647,14 +891,21 @@
 
                 <div class="modal-body">
                     <p>
-                        Preencha os dados do contêiner, informe o peso,
-                        selecione a unidade e indique a classificação da
-                        carga.
+                        Preencha os dados do contêiner, informe o
+                        peso, selecione a unidade e indique a
+                        classificação da carga.
+                    </p>
+
+                    <p>
+                        Ao salvar, o sistema validará os dados,
+                        converterá libras para quilogramas e
+                        armazenará o manifesto.
                     </p>
 
                     <p class="mb-0">
-                        Ao salvar, o sistema validará os dados, converterá
-                        libras para quilogramas e armazenará o manifesto.
+                        Para corrigir um registro, clique em Editar
+                        no histórico, altere os dados e selecione
+                        Salvar alterações.
                     </p>
                 </div>
 
