@@ -34,7 +34,7 @@
                 </div>
             </div>
 
-            <h1>Manifesto Eletrônico de Carga</h1>
+            <h1>Módulo de Manifesto de Carga</h1>
 
             <div class="usuario-sistema">
                 <i class="bi bi-person-circle"></i>
@@ -605,7 +605,7 @@
             </span>
 
             <span>
-                Módulo: Manifesto Eletrônico de Carga
+                Módulo: Manifesto de Carga
             </span>
 
             <span>
