@@ -10,223 +10,168 @@
 
     <meta
         name="description"
-        content="Sistema de validação e gerenciamento de manifestos de carga."
+        content="Sistema de gerenciamento de manifestos de carga."
     >
 
-    <title>Manifesto de Carga | LTHS Tecnologia</title>
+    <title>Manifesto Eletrônico de Carga | LTHS Tecnologia</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container py-2">
-            <a
-                class="navbar-brand d-flex align-items-center gap-3"
-                href="{{ route('manifestos.index') }}"
-            >
-                <span class="logo-container">
-                    <img
-                        src="{{ asset('imagens/logo2026.webp') }}"
-                        alt="Logo da LTHS Tecnologia"
-                        class="logo-empresa"
-                    >
-                </span>
+    <div class="sistema">
+        
+        <header class="barra-superior">
+            <div class="marca-sistema">
+                <img
+                    src="{{ asset('imagens/logo2026.webp') }}"
+                    alt="Logo da LTHS Tecnologia"
+                >
 
-                <span>
+                <div>
                     <strong>LTHS Tecnologia</strong>
+                    <span>Sistema de Gestão Logística</span>
+                </div>
+            </div>
 
-                    <small class="d-block text-white-50">
-                        CargaSegura • Gestão logística
-                    </small>
-                </span>
+            <h1>Manifesto Eletrônico de Carga</h1>
+
+            <div class="usuario-sistema">
+                <i class="bi bi-person-circle"></i>
+
+                <div>
+                    <strong>Operador</strong>
+                    <span>Sistema local</span>
+                </div>
+            </div>
+        </header>
+
+        
+        <nav class="barra-ferramentas">
+            <a
+                href="{{ route('manifestos.index') }}"
+                class="ferramenta"
+            >
+                <i class="bi bi-file-earmark-plus"></i>
+                <span>Novo</span>
             </a>
 
-            <div class="d-flex align-items-center gap-2 text-white-50">
-                <span class="status-online"></span>
-                <small>Sistema operacional</small>
-            </div>
-        </div>
-    </nav>
-
-    <header class="cabecalho-pagina">
-        <div class="container">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-8">
-                    <span class="etiqueta">
-                        PAINEL DE CONTROLE
-                    </span>
-
-                    <h1 class="mt-3 mb-2">
-                        Manifesto de Carga
-                    </h1>
-
-                    <p class="mb-0">
-                        Cadastre, valide e normalize as informações das
-                        cargas transportadas.
-                    </p>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="data-atual">
-                        <i class="bi bi-calendar3"></i>
-
-                        <div>
-                            <small>Data de operação</small>
-
-                            <strong>
-                                {{ now('America/Sao_Paulo')->format('d/m/Y') }}
-                            </strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="container py-4 py-lg-5">
-        @if (session('success'))
-            <div
-                class="alert alert-success alert-dismissible fade show"
-                role="alert"
+            <button
+                type="submit"
+                form="form-manifesto"
+                class="ferramenta"
             >
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-check-circle-fill"></i>
+                <i class="bi bi-floppy"></i>
+                <span>Salvar</span>
+            </button>
 
-                    <span>{{ session('success') }}</span>
-                </div>
+            <a href="#historico" class="ferramenta">
+                <i class="bi bi-search"></i>
+                <span>Pesquisar</span>
+            </a>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Fechar"
-                ></button>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
+            <button
+                type="button"
+                class="ferramenta"
+                onclick="window.print()"
             >
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
+                <i class="bi bi-printer"></i>
+                <span>Imprimir</span>
+            </button>
+
+            <button
+                type="button"
+                class="ferramenta"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAjuda"
+            >
+                <i class="bi bi-question-circle"></i>
+                <span>Ajuda</span>
+            </button>
+        </nav>
+
+        <main class="area-trabalho">
+        
+            <section class="cabecalho-registro">
+                <div class="numero-carga">
+                    <span>Nº DA CARGA:</span>
 
                     <strong>
-                        Não foi possível processar o manifesto.
+                        @if ($manifestoProcessado)
+                            {{ $manifestoProcessado->container_id }}
+                        @else
+                            NOVO
+                        @endif
                     </strong>
                 </div>
 
-                <span class="d-block mt-1">
-                    Verifique os campos destacados e tente novamente.
-                </span>
+                <div class="situacao-registro">
+                    <span>Situação:</span>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Fechar"
-                ></button>
-            </div>
-        @endif
-
-        <section class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="card cartao-indicador h-100">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <span class="indicador-icone azul">
-                            <i class="bi bi-file-earmark-text"></i>
-                        </span>
-
-                        <div>
-                            <small>Manifestos cadastrados</small>
-
-                            <h2 class="mb-0">
-                                {{ $indicadores['total'] }}
-                            </h2>
-                        </div>
-                    </div>
+                    @if ($manifestoProcessado)
+                        <strong class="situacao cadastrado">
+                            <i class="bi bi-check-square-fill"></i>
+                            CADASTRADO
+                        </strong>
+                    @elseif ($errors->any())
+                        <strong class="situacao erro">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            ERRO DE VALIDAÇÃO
+                        </strong>
+                    @else
+                        <strong class="situacao digitacao">
+                            <i class="bi bi-pencil-square"></i>
+                            EM DIGITAÇÃO
+                        </strong>
+                    @endif
                 </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card cartao-indicador h-100">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <span class="indicador-icone verde">
-                            <i class="bi bi-check-circle"></i>
-                        </span>
+                <div class="data-registro">
+                    <span>Data e hora:</span>
 
-                        <div>
-                            <small>Cargas validadas</small>
-
-                            <h2 class="mb-0">
-                                {{ $indicadores['validados'] }}
-                            </h2>
-                        </div>
-                    </div>
+                    <strong>
+                        {{ now('America/Sao_Paulo')->format('d/m/Y H:i') }}
+                    </strong>
                 </div>
-            </div>
+            </section>
 
-            <div class="col-md-4">
-                <div class="card cartao-indicador h-100">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <span class="indicador-icone amarelo">
-                            <i class="bi bi-exclamation-triangle"></i>
-                        </span>
-
-                        <div>
-                            <small>Cargas perigosas</small>
-
-                            <h2 class="mb-0">
-                                {{ $indicadores['perigosos'] }}
-                            </h2>
-                        </div>
-                    </div>
+            @if (session('success'))
+                <div class="mensagem-sistema sucesso">
+                    <i class="bi bi-check-circle-fill"></i>
+                    {{ session('success') }}
                 </div>
-            </div>
-        </section>
+            @endif
 
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <section class="card cartao-principal">
-                    <div class="card-header bg-white">
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="numero-etapa">01</span>
+            @if ($errors->any())
+                <div class="mensagem-sistema falha">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
 
-                            <div>
-                                <h2 class="h5 mb-1">
-                                    Dados do manifesto
-                                </h2>
+                    Existem informações ausentes ou inválidas.
+                    Verifique os campos destacados.
+                </div>
+            @endif
 
-                                <p class="text-secondary small mb-0">
-                                    Preencha todos os campos obrigatórios.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <form
+                id="form-manifesto"
+                method="POST"
+                action="{{ route('manifestos.store') }}"
+                autocomplete="off"
+            >
+                @csrf
 
-                    <div class="card-body p-4">
-                        <form
-                            method="POST"
-                            action="{{ route('manifestos.store') }}"
-                        >
-                            @csrf
+                <div class="grade-operacional">
+                    <div class="coluna-formulario">
+                        
+                        <fieldset class="grupo-erp">
+                            <legend>Informações da carga</legend>
 
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label
-                                        for="container_id"
-                                        class="form-label"
-                                    >
+                            <div class="linha-formulario">
+                                <div class="campo campo-id">
+                                    <label for="container_id">
                                         ID do contêiner
                                     </label>
 
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-upc-scan"></i>
-                                        </span>
-
+                                    <div class="controle-com-icone">
                                         <input
                                             type="number"
                                             id="container_id"
@@ -234,68 +179,57 @@
                                             min="1"
                                             step="1"
                                             value="{{ old('container_id') }}"
-                                            placeholder="Ex.: 55"
-                                            class="form-control
-                                                @error('container_id')
-                                                    is-invalid
-                                                @enderror"
+                                            class="@error('container_id') invalido @enderror"
                                         >
 
-                                        @error('container_id')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
+                                        <i class="bi bi-upc-scan"></i>
                                     </div>
+
+                                    @error('container_id')
+                                        <small class="erro-campo">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label
-                                        for="destination"
-                                        class="form-label"
-                                    >
+                                <div class="campo campo-destino">
+                                    <label for="destination">
                                         Destino
                                     </label>
 
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-geo-alt"></i>
-                                        </span>
-
+                                    <div class="controle-com-icone">
                                         <input
                                             type="text"
                                             id="destination"
                                             name="destination"
                                             maxlength="150"
                                             value="{{ old('destination') }}"
-                                            placeholder="Ex.: São Paulo"
-                                            class="form-control
-                                                @error('destination')
-                                                    is-invalid
-                                                @enderror"
+                                            class="@error('destination') invalido @enderror"
                                         >
 
-                                        @error('destination')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
+                                        <i class="bi bi-geo-alt"></i>
                                     </div>
-                                </div>
 
-                                <div class="col-md-6">
-                                    <label
-                                        for="weight"
-                                        class="form-label"
-                                    >
+                                    @error('destination')
+                                        <small class="erro-campo">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </fieldset>
+
+                       
+                        <fieldset class="grupo-erp">
+                            <legend>Peso e classificação</legend>
+
+                            <div class="linha-formulario">
+                                <div class="campo">
+                                    <label for="weight">
                                         Peso da carga
                                     </label>
 
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-speedometer2"></i>
-                                        </span>
-
+                                    <div class="controle-com-icone">
                                         <input
                                             type="number"
                                             id="weight"
@@ -303,227 +237,184 @@
                                             min="0.01"
                                             step="0.01"
                                             value="{{ old('weight') }}"
-                                            placeholder="Ex.: 400"
-                                            class="form-control
-                                                @error('weight')
-                                                    is-invalid
-                                                @enderror"
+                                            class="@error('weight') invalido @enderror"
                                         >
 
-                                        @error('weight')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
+                                        <i class="bi bi-speedometer2"></i>
                                     </div>
+
+                                    @error('weight')
+                                        <small class="erro-campo">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label
-                                        for="unit"
-                                        class="form-label"
-                                    >
+                                <div class="campo">
+                                    <label for="unit">
                                         Unidade de medida
                                     </label>
 
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-rulers"></i>
-                                        </span>
+                                    <select
+                                        id="unit"
+                                        name="unit"
+                                        class="@error('unit') invalido @enderror"
+                                    >
+                                        <option value="">
+                                            Selecione
+                                        </option>
 
-                                        <select
-                                            id="unit"
-                                            name="unit"
-                                            class="form-select
-                                                @error('unit')
-                                                    is-invalid
-                                                @enderror"
+                                        <option
+                                            value="kg"
+                                            @selected(old('unit') === 'kg')
                                         >
-                                            <option value="">
-                                                Selecione
-                                            </option>
+                                            KG - Quilogramas
+                                        </option>
 
-                                            <option
-                                                value="kg"
-                                                @selected(old('unit') === 'kg')
-                                            >
-                                                Quilogramas (kg)
-                                            </option>
+                                        <option
+                                            value="lb"
+                                            @selected(old('unit') === 'lb')
+                                        >
+                                            LB - Libras
+                                        </option>
+                                    </select>
 
-                                            <option
-                                                value="lb"
-                                                @selected(old('unit') === 'lb')
-                                            >
-                                                Libras (lb)
-                                            </option>
-                                        </select>
-
-                                        @error('unit')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <fieldset class="area-perigosa">
-                                        <legend>
-                                            A carga é perigosa?
-                                        </legend>
-
-                                        <p>
-                                            Informe se o transporte exige
-                                            cuidados especiais.
-                                        </p>
-
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <label class="opcao-carga">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="radio"
-                                                    name="hazmat"
-                                                    value="1"
-                                                    @checked(
-                                                        old('hazmat') === '1'
-                                                    )
-                                                >
-
-                                                <span>
-                                                    <i class="bi bi-exclamation-diamond"></i>
-                                                    Sim
-                                                </span>
-                                            </label>
-
-                                            <label class="opcao-carga">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="radio"
-                                                    name="hazmat"
-                                                    value="0"
-                                                    @checked(
-                                                        old('hazmat') === '0'
-                                                    )
-                                                >
-
-                                                <span>
-                                                    <i class="bi bi-shield-check"></i>
-                                                    Não
-                                                </span>
-                                            </label>
-                                        </div>
-
-                                        @error('hazmat')
-                                            <div
-                                                class="text-danger small mt-2"
-                                            >
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </fieldset>
+                                    @error('unit')
+                                        <small class="erro-campo">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
                                 </div>
                             </div>
 
-                            <div
-                                class="d-flex flex-column flex-sm-row
-                                    justify-content-end gap-2 mt-4"
-                            >
-                                <button
-                                    type="reset"
-                                    class="btn btn-light px-4"
-                                >
-                                    <i class="bi bi-arrow-counterclockwise me-2"></i>
-                                    Limpar
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary px-4"
-                                >
-                                    <i class="bi bi-check2-circle me-2"></i>
-                                    Validar e processar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-            </div>
-
-            <div class="col-lg-4">
-                <section class="card cartao-principal resultado">
-                    <div class="card-header bg-white">
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="numero-etapa">02</span>
-
-                            <div>
-                                <h2 class="h5 mb-1">
-                                    Resultado
-                                </h2>
-
-                                <p class="text-secondary small mb-0">
-                                    Resumo do processamento
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body">
-                        @if ($manifestoProcessado)
-                            <div class="resultado-sucesso">
-                                <span class="badge text-bg-success mb-3">
-                                    <i class="bi bi-check-circle me-1"></i>
-                                    Manifesto validado
+                            <div class="linha-classificacao">
+                                <span class="rotulo-classificacao">
+                                    Classificação da carga:
                                 </span>
 
-                                <div class="detalhe-resultado">
-                                    <span>ID do contêiner</span>
+                                <label class="opcao-radio">
+                                    <input
+                                        type="radio"
+                                        name="hazmat"
+                                        value="0"
+                                        @checked(old('hazmat') === '0')
+                                    >
 
-                                    <strong>
-                                        #{{ $manifestoProcessado->container_id }}
-                                    </strong>
+                                    <span>
+                                        <i class="bi bi-shield-check"></i>
+                                        Carga comum
+                                    </span>
+                                </label>
+
+                                <label class="opcao-radio perigosa">
+                                    <input
+                                        type="radio"
+                                        name="hazmat"
+                                        value="1"
+                                        @checked(old('hazmat') === '1')
+                                    >
+
+                                    <span>
+                                        <i class="bi bi-exclamation-diamond"></i>
+                                        Carga perigosa
+                                    </span>
+                                </label>
+                            </div>
+
+                            @error('hazmat')
+                                <small class="erro-campo">
+                                    {{ $message }}
+                                </small>
+                            @enderror
+                        </fieldset>
+
+                       
+                        <fieldset class="grupo-erp">
+                            <legend>Informações do processamento</legend>
+
+                            <div class="informacoes-processamento">
+                                <div>
+                                    <span>Conversão utilizada</span>
+                                    <strong>1 lb = 0,45 kg</strong>
                                 </div>
 
-                                <div class="detalhe-resultado">
-                                    <span>Destino</span>
-
-                                    <strong>
-                                        {{ $manifestoProcessado->destination }}
-                                    </strong>
+                                <div>
+                                    <span>Banco de dados</span>
+                                    <strong>SQLite conectado</strong>
                                 </div>
 
-                                <div class="detalhe-resultado">
-                                    <span>Peso informado</span>
+                                <div>
+                                    <span>Validação</span>
+                                    <strong>Executada pelo Laravel</strong>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
 
-                                    <strong>
-                                        {{ number_format(
-                                            (float) $manifestoProcessado->original_weight,
-                                            2,
-                                            ',',
-                                            '.'
-                                        ) }}
+                   
+                    <aside class="painel-resultado">
+                        <div class="titulo-painel">
+                            <i class="bi bi-clipboard-check"></i>
+                            Resultado do processamento
+                        </div>
 
-                                        {{ $manifestoProcessado->original_unit }}
-                                    </strong>
+                        @if ($manifestoProcessado)
+                            <div class="resultado-validado">
+                                <div class="selo-validado">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Manifesto válido
                                 </div>
 
-                                <div class="detalhe-resultado">
-                                    <span>Tipo de carga</span>
+                                <dl>
+                                    <div>
+                                        <dt>Contêiner</dt>
+                                        <dd>
+                                            #{{ $manifestoProcessado->container_id }}
+                                        </dd>
+                                    </div>
 
-                                    @if ($manifestoProcessado->hazmat)
-                                        <strong class="text-danger">
-                                            <i class="bi bi-exclamation-triangle me-1"></i>
-                                            Perigosa
-                                        </strong>
-                                    @else
-                                        <strong class="text-success">
-                                            <i class="bi bi-shield-check me-1"></i>
-                                            Comum
-                                        </strong>
-                                    @endif
-                                </div>
+                                    <div>
+                                        <dt>Destino</dt>
+                                        <dd>
+                                            {{ $manifestoProcessado->destination }}
+                                        </dd>
+                                    </div>
 
-                                <div class="peso-normalizado">
-                                    <span>Peso normalizado</span>
+                                    <div>
+                                        <dt>Peso informado</dt>
+                                        <dd>
+                                            {{ number_format(
+                                                (float) $manifestoProcessado->original_weight,
+                                                2,
+                                                ',',
+                                                '.'
+                                            ) }}
+
+                                            {{ strtoupper(
+                                                $manifestoProcessado->original_unit
+                                            ) }}
+                                        </dd>
+                                    </div>
+
+                                    <div>
+                                        <dt>Classificação</dt>
+
+                                        <dd>
+                                            @if ($manifestoProcessado->hazmat)
+                                                <span class="texto-perigo">
+                                                    Carga perigosa
+                                                </span>
+                                            @else
+                                                <span class="texto-sucesso">
+                                                    Carga comum
+                                                </span>
+                                            @endif
+                                        </dd>
+                                    </div>
+                                </dl>
+
+                                <div class="peso-processado">
+                                    <span>PESO NORMALIZADO</span>
 
                                     <strong>
                                         {{ number_format(
@@ -534,97 +425,70 @@
                                         ) }}
                                         kg
                                     </strong>
-
-                                    @if (
-                                        $manifestoProcessado->original_unit
-                                        === 'lb'
-                                    )
-                                        <small>
-                                            Conversão aplicada:
-                                            1 lb = 0,45 kg
-                                        </small>
-                                    @else
-                                        <small>
-                                            O peso já foi informado em
-                                            quilogramas.
-                                        </small>
-                                    @endif
                                 </div>
                             </div>
                         @elseif ($errors->any())
-                            <div class="resultado-com-erro">
+                            <div class="resultado-invalido">
+                                <i class="bi bi-x-octagon-fill"></i>
+
+                                <strong>Manifesto inválido</strong>
+
                                 <span>
-                                    <i class="bi bi-x-circle"></i>
+                                    Corrija os campos indicados para continuar.
                                 </span>
 
-                                <h3>Manifesto inválido</h3>
-
-                                <p>
-                                    Corrija os campos destacados antes de
-                                    realizar o processamento.
-                                </p>
-
                                 <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
+                                    @foreach ($errors->all() as $erro)
+                                        <li>{{ $erro }}</li>
                                     @endforeach
                                 </ul>
                             </div>
                         @else
-                            <div class="resultado-vazio">
+                            <div class="resultado-aguardando">
+                                <i class="bi bi-hourglass-split"></i>
+
+                                <strong>Aguardando processamento</strong>
+
                                 <span>
-                                    <i class="bi bi-clipboard-data"></i>
+                                    Preencha os dados e clique em Salvar.
                                 </span>
-
-                                <h3>
-                                    Nenhum manifesto processado
-                                </h3>
-
-                                <p>
-                                    Preencha o formulário para validar e
-                                    normalizar os dados da carga.
-                                </p>
                             </div>
                         @endif
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        @if ($manifestos->isNotEmpty())
-            <section class="card cartao-principal mt-4">
-                <div class="card-header bg-white">
-                    <div
-                        class="d-flex flex-column flex-sm-row
-                            align-items-sm-center
-                            justify-content-between gap-3"
-                    >
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="numero-etapa">03</span>
-
-                            <div>
-                                <h2 class="h5 mb-1">
-                                    Histórico de manifestos
-                                </h2>
-
-                                <p class="text-secondary small mb-0">
-                                    Registros processados pelo sistema
-                                </p>
-                            </div>
-                        </div>
-
-                        <span class="badge text-bg-light">
-                            {{ $manifestos->count() }}
-                            registro(s)
-                        </span>
-                    </div>
+                    </aside>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table tabela-manifestos align-middle mb-0">
+                <div class="acoes-formulario">
+                    <button type="submit" class="botao-erp salvar">
+                        <i class="bi bi-check-lg"></i>
+                        Salvar e processar
+                    </button>
+
+                    <a
+                        href="{{ route('manifestos.index') }}"
+                        class="botao-erp cancelar"
+                    >
+                        <i class="bi bi-x-lg"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        
+            <section id="historico" class="historico-erp">
+                <div class="titulo-painel">
+                    <i class="bi bi-table"></i>
+                    Histórico de manifestos
+
+                    <span>
+                        {{ $manifestos->count() }} registro(s)
+                    </span>
+                </div>
+
+                <div class="tabela-container">
+                    <table>
                         <thead>
                             <tr>
-                                <th>Contêiner</th>
+                                <th>Nº da carga</th>
                                 <th>Destino</th>
                                 <th>Peso informado</th>
                                 <th>Peso normalizado</th>
@@ -634,16 +498,15 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($manifestos as $manifesto)
+                            @forelse ($manifestos as $manifesto)
                                 <tr>
                                     <td>
                                         <strong>
-                                            #{{ $manifesto->container_id }}
+                                            {{ $manifesto->container_id }}
                                         </strong>
                                     </td>
 
                                     <td>
-                                        <i class="bi bi-geo-alt text-primary me-1"></i>
                                         {{ $manifesto->destination }}
                                     </td>
 
@@ -655,7 +518,9 @@
                                             '.'
                                         ) }}
 
-                                        {{ $manifesto->original_unit }}
+                                        {{ strtoupper(
+                                            $manifesto->original_unit
+                                        ) }}
                                     </td>
 
                                     <td>
@@ -672,17 +537,11 @@
 
                                     <td>
                                         @if ($manifesto->hazmat)
-                                            <span
-                                                class="badge
-                                                    text-bg-danger"
-                                            >
+                                            <span class="status-tabela perigosa">
                                                 Perigosa
                                             </span>
                                         @else
-                                            <span
-                                                class="badge
-                                                    text-bg-success"
-                                            >
+                                            <span class="status-tabela comum">
                                                 Comum
                                             </span>
                                         @endif
@@ -694,40 +553,122 @@
                                             ->format('d/m/Y H:i') }}
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="sem-registros">
+                                        Nenhum manifesto cadastrado.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-            </section>
-        @endif
-    </main>
 
-    <footer class="rodape">
-        <div
-            class="container d-flex flex-column flex-md-row
-                align-items-center justify-content-between gap-3"
-        >
-            <div class="empresa-rodape">
-                <img
-                    src="{{ asset('imagens/logo2026.webp') }}"
-                    alt="Logo da LTHS Tecnologia"
-                    class="logo-rodape"
-                >
+                <div class="totais-operacionais">
+                    <div>
+                        <span>Total de cargas</span>
+                        <strong>{{ $indicadores['total'] }}</strong>
+                    </div>
 
-                <div>
-                    <strong>LTHS Tecnologia</strong>
+                    <div>
+                        <span>Cargas validadas</span>
+                        <strong>{{ $indicadores['validados'] }}</strong>
+                    </div>
 
-                    <small>
-                        CargaSegura • Sistema de validação logística
-                    </small>
+                    <div>
+                        <span>Cargas perigosas</span>
+                        <strong>{{ $indicadores['perigosos'] }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Peso total normalizado</span>
+
+                        <strong>
+                            {{ number_format(
+                                (float) $manifestos->sum('weight_kg'),
+                                2,
+                                ',',
+                                '.'
+                            ) }}
+                            kg
+                        </strong>
+                    </div>
                 </div>
-            </div>
+            </section>
+        </main>
 
-            <span class="direitos-autorais">
+       
+        <footer class="barra-status">
+            <span>
+                <i class="bi bi-circle-fill"></i>
+                Sistema conectado
+            </span>
+
+            <span>
+                Banco SQLite
+            </span>
+
+            <span>
+                Laravel {{ app()->version() }}
+            </span>
+
+            <span class="direitos">
                 &copy; {{ date('Y') }} LTHS Tecnologia.
                 Todos os direitos reservados.
             </span>
+        </footer>
+    </div>
+
+   
+    <div
+        class="modal fade"
+        id="modalAjuda"
+        tabindex="-1"
+        aria-labelledby="tituloModalAjuda"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2
+                        class="modal-title fs-5"
+                        id="tituloModalAjuda"
+                    >
+                        Ajuda do sistema
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Fechar"
+                    ></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Preencha os dados do contêiner, informe o peso,
+                        selecione a unidade e indique a classificação da
+                        carga.
+                    </p>
+
+                    <p class="mb-0">
+                        Ao salvar, o sistema validará os dados, converterá
+                        libras para quilogramas e armazenará o manifesto.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-dismiss="modal"
+                    >
+                        Entendi
+                    </button>
+                </div>
+            </div>
         </div>
-    </footer>
+    </div>
 </body>
 </html>
