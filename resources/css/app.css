@@ -1007,3 +1007,27 @@ a {
         break-inside: avoid;
     }
 }
+
+.situacao.edicao {
+    color: #1f6ca5;
+}
+
+.botao-editar {
+    display: inline-flex;
+    min-height: 25px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 3px 8px;
+    background: linear-gradient(180deg, #ffffff, #d8e7f4);
+    border: 1px solid #779bbd;
+    border-radius: 2px;
+    color: #164d7c;
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.botao-editar:hover {
+    background: #c9e0f3;
+    color: #0d3c65;
+}
