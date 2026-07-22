@@ -62,7 +62,7 @@
         <header class="barra-superior">
             <div class="marca-sistema">
                 <img
-                    src="{{ asset('imagens/logo2026.webp') }}"
+                    src="{{ asset('imagens/logo2026.png') }}"
                     alt="Logo da LTHS Tecnologia"
                 >
 
